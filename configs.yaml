@@ -1,9 +1,0 @@
-states_file: ""
-key_1: Value1
-key_2: Value2
-key_3: Value3
-users:
-- user1
-- user2
-- user3
-- user4
