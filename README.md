@@ -46,8 +46,8 @@ main.go
 	func LoadConfigs(cf string) error {
 		confstate.ConfigsFile = cf // ConfigsFile Filename
 		confstate.OffsetFromBin = "." // Base directory offset from executable binary
-		confstate.DefaultConfigsFile = "configs.yaml" // Configs File default filename
-		confstate.DefaultStatesFile =  "states.json" // States File default filename
+		confstate.DefaultConfigsFile = "etc/configs.yaml" // Configs File default filename
+		confstate.DefaultStatesFile =  "etc/states.json" // States File default filename
 		confstate.Debug = true // Debug mode
 	
 		// Initalize Configs
