@@ -7,18 +7,26 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"github.com/mitchellh/go-homedir"
+)
+
+const (
+	DBTWork = iota // DefaultBaseDir is WorkDir
+	DBTHome        // DefaultBaseDir is HomeDir
+	DBTBin         // DefaultBaseDir is Offset from excutable binary
 )
 
 var (
-	Configs            interface{}         // Configs data
-	States             interface{}         // States data
-	BaseDir            string              // Base directory
-	ConfigsFile        string              // ConfigsFile Filename
-	StatesFile         string              // StatesFile Filename
-	OffsetFromBin      string              // Base directory offset from executable binary
-	DefaultConfigsFile string              // Default filename ConfigFile
-	DefaultStatesFile  string              // Default filename StatesFile
-	Debug              bool        = false // Debug Mode
+	Configs            interface{}   // Configs data
+	States             interface{}   // States data
+	BaseDir            string        // Base directory
+	ConfigsFile        string        // ConfigsFile Filename
+	StatesFile         string        // StatesFile Filename
+	OffsetFromBin      string        // Base directory offset from executable binary
+	DefaultConfigsFile string        // Default filename ConfigFile (relative path)
+	DefaultStatesFile  string        // Default filename StatesFile (relative path)
+	DefaultBaseDirType int = DBTBin  // Basedir get offset from executable binary
+	Debug              bool = false  // Debug Mode
 )
 
 // GetDir Get absorute directory from excutable binary
@@ -26,21 +34,38 @@ func GetDir(p string) (string, error) {
 	return filepath.Abs(filepath.Join(BaseDir, p))
 }
 
-// Init Initialize
-func Init() {
-	// Get relative directory from executable binary
-	exe, err := os.Executable()
-	if err != nil {
-		log.Fatal(err)
-	}
-	BaseDir, err = filepath.Abs(filepath.Join(filepath.Dir(exe), OffsetFromBin))
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
 // LoadConfigs Initialize and Load
 func LoadConfigs() error {
+
+	// set BaseDir
+	if BaseDir == "" {
+		switch DefaultBaseDirType {
+		case DBTBin:
+			// Get relative directory from executable binary
+			exe, err := os.Executable()
+			if err != nil {
+				log.Fatal(err)
+			}
+			b, err := filepath.Abs(filepath.Join(filepath.Dir(exe), OffsetFromBin))
+			if err != nil {
+				log.Fatal(err)
+			}
+			BaseDir = b
+		case DBTHome:
+			b,err := homedir.Dir()
+			if err != nil {
+				log.Fatal(err)
+			}
+			BaseDir = b
+
+		case DBTWork:
+			b,err := os.Getwd()
+			if err != nil {
+				log.Fatal(err)
+			}
+			BaseDir = b
+		}
+	}
 
 	// Set default value if ConfigsFile is empty
 	if ConfigsFile == "" {
@@ -50,6 +75,12 @@ func LoadConfigs() error {
 			ConfigsFile = c
 		}
 	}
+
+	// create directory
+	if err := createPath(ConfigsFile); err != nil {
+		return err
+	}
+
 	if _, err := os.Stat(ConfigsFile); !os.IsNotExist(err) {
 		// Load ConfigsFile
 		buf, err := ioutil.ReadFile(ConfigsFile)
@@ -84,6 +115,10 @@ func LoadConfigs() error {
 
 // LoadStates Load StatesFile
 func LoadStates() error {
+
+	if err := createPath(StatesFile); err != nil {
+		return err
+	}
 
 	if StatesFile == "" {
 		if c, err := GetDir(DefaultStatesFile); err != nil {
@@ -127,3 +162,16 @@ func SaveStates() error {
 	}
 	return nil
 }
+
+
+// create directory if not exists
+func createPath(n string) error {
+	d := filepath.Dir(n)
+	if _, err := os.Stat(d); os.IsNotExist(err) {
+		if err := os.MkdirAll(d,0755); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+

@@ -21,11 +21,12 @@ type States struct {
 
 // Load Initalize and load
 func Load(cf string) error {
-	cs.ConfigsFile = cf                    // ConfigsFile Filename
-	cs.OffsetFromBin = ".."                // Base directory offset from executable binary
-	cs.DefaultConfigsFile = "configs.yaml" // Configs File default filename
-	cs.DefaultStatesFile = "states.json"   // States File default filename
-	cs.Debug = true                        // Debug mode
+	cs.ConfigsFile        = cf        // ConfigsFile Filename
+	cs.DefaultBaseDirType = cs.DBTBin // Basedir is offset from executable binary
+	cs.OffsetFromBin      = ".."      // Base directory offset from executable binary
+	cs.DefaultConfigsFile = "etc/configs.yaml" // Configs File default filename
+	cs.DefaultStatesFile  = "etc/states.json"  // States File default filename
+	cs.Debug = true                   // Debug mode
 
 	// Initalize Configs
 	cs.Configs = &Configs{
@@ -42,6 +43,12 @@ func Load(cf string) error {
 	if err := cs.LoadConfigs(); err != nil {
 		return err
 	}
+
+	// Sets the StatesFile if the states_file has been set
+	if v := C().StatesFile; v != "" {
+		cs.StatesFile = v
+	}
+
 	if err := cs.LoadStates(); err != nil {
 		return err
 	}
