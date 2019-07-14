@@ -4,15 +4,15 @@ Set in YAML, save in JSON
 
 [![GoDoc](https://godoc.org/github.com/mamemomonga/go-confstate?status.svg)](https://godoc.org/github.com/mamemomonga/go-confstate)
 
-If you do not specify ConfigsFile, using "go run" will cause problems due to the location of the execution binary.
-
 # 設定と状態
 
 * YAMLで設定、JSONで状態を保存する
 * それぞれのパスを未指定の場合は、実行バイナリの相対位置から決定される
 * このサンプルでは、ユーザごとにパスワードを生成する
 
-ConfigsFileを指定しない場合、"go run"を使用すると実行バイナリの位置の関係で問題が発生します。
+# INSTALL
+
+	go get -u -v github.com/mamemomonga/go-confstate
 
 # Examples
 
@@ -44,10 +44,22 @@ main.go
 	
 	// Load Initalize and load
 	func LoadConfigs(cf string) error {
+	
 		confstate.ConfigsFile = cf // ConfigsFile Filename
-		confstate.OffsetFromBin = "." // Base directory offset from executable binary
+	
 		confstate.DefaultConfigsFile = "etc/configs.yaml" // Configs File default filename
+	
 		confstate.DefaultStatesFile =  "etc/states.json" // States File default filename
+	
+		confstate.DefaultBaseDirType = confstate.DBTBin // Basedir is offset from executable binary
+		confstate.OffsetFromBin = "." // Base directory offset from executable binary
+		// If you do not specify ConfigsFile, using "go run" will cause problems due to the location of the execution binary.
+		// ConfigsFileを指定しない場合、"go run"を使用すると実行バイナリの位置の関係で問題が発生します。
+	
+		// confstate.DefaultBaseDirType = confstate.DBTHome // DBTHome: Basedir is Home Directory
+	
+		// confstate.DefaultBaseDirType = confstate.DBTWork // DBTWork: Basedir is Work Directory
+	
 		confstate.Debug = true // Debug mode
 	
 		// Initalize Configs
@@ -110,6 +122,7 @@ main.go
 		// Dump it
 		spew.Dump(S())
 	}
+
 
 run
 
