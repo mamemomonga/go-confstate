@@ -1,7 +1,7 @@
 // Example myconfstate
 package myconfstate
 
-import(
+import (
 	cs "github.com/mamemomonga/go-confstate"
 )
 
@@ -21,44 +21,49 @@ type States struct {
 
 // Load Initalize and load
 func Load(cf string) error {
-	cs.ConfigsFile = cf // ConfigsFile Filename
-	cs.OffsetFromBin = ".." // Base directory offset from executable binary
+	cs.ConfigsFile = cf                    // ConfigsFile Filename
+	cs.OffsetFromBin = ".."                // Base directory offset from executable binary
 	cs.DefaultConfigsFile = "configs.yaml" // Configs File default filename
-	cs.DefaultStatesFile =  "states.json" // States File default filename
-	cs.Debug = true // Debug mode
+	cs.DefaultStatesFile = "states.json"   // States File default filename
+	cs.Debug = true                        // Debug mode
 
 	// Initalize Configs
 	cs.Configs = &Configs{
-		Key1: "Value1",
-		Key2: "Value2",
-		Key3: "Value3",
-		Users: []string{"user1","user2","user3"},
+		Key1:  "Value1",
+		Key2:  "Value2",
+		Key3:  "Value3",
+		Users: []string{"user1", "user2", "user3"},
 	}
 	// Initalize States
-	confstate.States = &States{
+	cs.States = &States{
 		Passwords: make(map[string]string),
 	}
 
-	return confstate.Load()
+	if err := cs.LoadConfigs(); err != nil {
+		return err
+	}
+	if err := cs.LoadStates(); err != nil {
+		return err
+	}
+	return nil
 }
 
 // C Accessor for Configs
 func C() *Configs {
-	return confstate.Configs.(*Configs)
+	return cs.Configs.(*Configs)
 }
 
 // S Accessor for States
 func S() *States {
-	return confstate.States.(*States)
+	return cs.States.(*States)
 }
 
 // GetDir Accessor for GetDir(Not required)
 func GetDir(p string) (string, error) {
-	return confstate.GetDir(p)
+	return cs.GetDir(p)
 }
 
 // Save States file
 func Save() error {
-	return confstate.SaveStates()
+	return cs.SaveStates()
 }
-

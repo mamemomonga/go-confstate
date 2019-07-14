@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/mamemomonga/go-confstate/examples/myconfstate"
 	"github.com/sethvargo/go-password/password"
@@ -8,8 +9,12 @@ import (
 )
 
 func main() {
+
+	c := flag.String("c", "", "ConfigFile")
+	flag.Parse()
+
 	// Initalize and load configs and states
-	if err := myconfstate.Load(); err != nil {
+	if err := myconfstate.Load(*c); err != nil {
 		log.Fatal(err)
 	}
 

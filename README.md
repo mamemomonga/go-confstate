@@ -2,6 +2,9 @@
 
 Set in YAML, save in JSON
 
+[![GoDoc](https://godoc.org/github.com/mamemomonga/go-confstate?status.svg)](https://godoc.org/github.com/mamemomonga/go-confstate)
+
+
 # 設定と状態
 
 * YAMLで設定、JSONで状態を保存する

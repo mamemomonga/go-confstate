@@ -7,5 +7,5 @@ bin/$(NAME): $(SRCS)
 
 clean:
 	rm -rf bin
-	rm -f config.yaml state.json
+	rm -f configs.yaml states.json
 
