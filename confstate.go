@@ -26,6 +26,8 @@ var (
 	DefaultConfigsFile string        // Default filename ConfigFile (relative path)
 	DefaultStatesFile  string        // Default filename StatesFile (relative path)
 	DefaultBaseDirType int = DBTBin  // Basedir get offset from executable binary
+    NewConfigsFile     bool = false  // Create New ConfigsFile
+    NewStatesFile      bool = false  // Create New StatesFile
 	Debug              bool = false  // Debug Mode
 )
 
@@ -105,6 +107,7 @@ func LoadConfigs() error {
 		if err != nil {
 			return err
 		}
+		NewConfigsFile = true
 		if Debug {
 			log.Printf("Save: %s", ConfigsFile)
 		}
@@ -149,6 +152,11 @@ func LoadStates() error {
 
 // SaveStates Save StatesFile
 func SaveStates() error {
+
+	fileExist := true
+	if _, err := os.Stat(StatesFile); os.IsNotExist(err) {
+		fileExist = false
+	}
 	buf, err := json.MarshalIndent(States, "", "\t")
 	if err != nil {
 		return err
@@ -156,6 +164,9 @@ func SaveStates() error {
 	err = ioutil.WriteFile(StatesFile, buf, 0644)
 	if err != nil {
 		return err
+	}
+	if !fileExist {
+		NewStatesFile = true
 	}
 	if Debug {
 		log.Printf("Save: %s", StatesFile)

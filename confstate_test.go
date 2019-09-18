@@ -69,7 +69,21 @@ func Test02SaveState(t *testing.T) {
 	}
 }
 
-func Test03RemoveFile(t *testing.T) {
+func Test03NewFile(t *testing.T) {
+	if skipFlag {
+		t.SkipNow()
+	}
+	if !confstate.NewConfigsFile {
+		skipFlag = true
+		t.Fatal("ConfigsFile not New File")
+	}
+	if !confstate.NewStatesFile {
+		skipFlag = true
+		t.Fatal("StatesFile not New File")
+	}
+}
+
+func Test04RemoveFile(t *testing.T) {
 	if skipFlag {
 		t.SkipNow()
 	}
